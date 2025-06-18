@@ -1,25 +1,157 @@
 ---
-import '../styles/global.css';
-// Component Imports
-import Button from '../components/Button.astro';
+import { getCollection } from 'astro:content';
+import ToolPage from '../layouts/ToolPage.astro';
 
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+const tools = await getCollection('tools');
+const featuredTools = tools.slice(0, 3); // 显示前3个工具作为特色工具
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
+<ToolPage title="UniPlug 工具站" description="强大的在线工具集合，全部在浏览器本地运行，保护您的隐私安全">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Hero Section -->
+    <div class="text-center py-16">
+      <h1 class="text-5xl font-bold text-gray-900 mb-6">
+        <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          UniPlug
+        </span>
+        <br />
+        强大的在线工具站
+      </h1>
+      <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+        提供各种实用的在线工具，全部在浏览器本地运行，无需上传文件到服务器，
+        <strong>完全保护您的隐私安全</strong>
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="/tools"
+          class="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-lg"
+        >
+          浏览所有工具
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+        <a
+          href="#features"
+          class="inline-flex items-center px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200 text-lg"
+        >
+          了解更多
+        </a>
+      </div>
+    </div>
 
-	<body>
-		<div class="grid place-items-center h-screen content-center">
-			<Button>Tailwind Button in Astro!</Button>
-			<a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
-		</div>
-	</body>
-</html>
+    <!-- Features Section -->
+    <section id="features" class="py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">为什么选择 UniPlug？</h2>
+        <p class="text-lg text-gray-600">我们致力于提供最安全、最便捷的在线工具体验</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">隐私保护</h3>
+          <p class="text-gray-600">所有工具在浏览器本地运行，您的数据永远不会离开您的设备</p>
+        </div>
+        
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">快速高效</h3>
+          <p class="text-gray-600">无需等待上传下载，即开即用，处理速度仅受您设备性能限制</p>
+        </div>
+        
+        <div class="text-center p-6">
+          <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">完全免费</h3>
+          <p class="text-gray-600">所有工具完全免费使用，无需注册，无使用限制</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Tools Section -->
+    {featuredTools.length > 0 && (
+      <section class="py-16">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">热门工具</h2>
+          <p class="text-lg text-gray-600">最受欢迎的工具，立即体验</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {featuredTools.map((tool) => (
+            <div class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 overflow-hidden">
+              <div class="p-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                  {tool.data.title}
+                </h3>
+                <p class="text-gray-600 mb-4">
+                  {tool.data.description}
+                </p>
+                {tool.data.tags && tool.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-1 mb-4">
+                    {tool.data.tags.slice(0, 2).map((tag) => (
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <a
+                  href={`/tools/${tool.slug}`}
+                  class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  立即使用
+                  <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div class="text-center mt-8">
+          <a
+            href="/tools"
+            class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200"
+          >
+            查看所有工具
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </section>
+    )}
+
+    <!-- CTA Section -->
+    <section class="py-16">
+      <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-8 text-center text-white">
+        <h2 class="text-3xl font-bold mb-4">开始使用 UniPlug</h2>
+        <p class="text-xl mb-6 opacity-90">
+          无需注册，无需下载，立即体验强大的在线工具
+        </p>
+        <a
+          href="/tools"
+          class="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        >
+          开始探索
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+      </div>
+    </section>
+  </div>
+</ToolPage>

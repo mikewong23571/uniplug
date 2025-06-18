@@ -1,0 +1,158 @@
+---
+import { getCollection } from 'astro:content';
+import ToolPage from '../../layouts/ToolPage.astro';
+
+const tools = await getCollection('tools');
+
+// 按分类分组工具
+const toolsByCategory = tools.reduce((acc, tool) => {
+  const category = tool.data.category || '其他';
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category].push(tool);
+  return acc;
+}, {} as Record<string, typeof tools>);
+
+const categories = Object.keys(toolsByCategory).sort();
+---
+
+<ToolPage title="所有工具" description="浏览 UniPlug 提供的所有在线工具，全部在浏览器本地运行，保护您的隐私">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 页面标题 -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">工具集合</h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        发现强大的在线工具，全部在浏览器本地运行，无需上传文件，保护您的隐私安全
+      </p>
+    </div>
+
+    <!-- 工具统计 -->
+    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 mb-12 text-white">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div>
+          <div class="text-3xl font-bold">{tools.length}</div>
+          <div class="text-blue-100">可用工具</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold">{categories.length}</div>
+          <div class="text-blue-100">工具分类</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold">100%</div>
+          <div class="text-blue-100">本地运行</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类导航 -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">按分类浏览</h2>
+      <div class="flex flex-wrap gap-2">
+        {categories.map((category) => (
+          <a
+            href={`#category-${category.replace(/\s+/g, '-').toLowerCase()}`}
+            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200"
+          >
+            {category}
+            <span class="ml-2 bg-gray-200 text-gray-600 px-2 py-1 rounded-full text-xs">
+              {toolsByCategory[category].length}
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- 工具列表 -->
+    <div class="space-y-12">
+      {categories.map((category) => (
+        <section id={`category-${category.replace(/\s+/g, '-').toLowerCase()}`}>
+          <h3 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+            <span class="w-1 h-8 bg-blue-500 rounded-full mr-4"></span>
+            {category}
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {toolsByCategory[category].map((tool) => (
+              <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                <div class="p-6">
+                  <h4 class="text-xl font-semibold text-gray-900 mb-2">
+                    <a href={`/tools/${tool.slug}`} class="hover:text-blue-600 transition-colors">
+                      {tool.data.title}
+                    </a>
+                  </h4>
+                  
+                  <p class="text-gray-600 mb-4 line-clamp-2">
+                    {tool.data.description}
+                  </p>
+                  
+                  {tool.data.tags && tool.data.tags.length > 0 && (
+                    <div class="flex flex-wrap gap-1 mb-4">
+                      {tool.data.tags.slice(0, 3).map((tag) => (
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {tag}
+                        </span>
+                      ))}
+                      {tool.data.tags.length > 3 && (
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                          +{tool.data.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center text-sm text-gray-500">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      本地运行
+                    </div>
+                    
+                    <a
+                      href={`/tools/${tool.slug}`}
+                      class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200"
+                    >
+                      使用工具
+                      <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <!-- 底部 CTA -->
+    <div class="mt-16 text-center">
+      <div class="bg-gray-50 rounded-lg p-8">
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">需要更多工具？</h3>
+        <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+          我们持续添加新的工具。如果您有特定需求或建议，欢迎联系我们。
+        </p>
+        <a
+          href="/contact"
+          class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors duration-200"
+        >
+          联系我们
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</ToolPage>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

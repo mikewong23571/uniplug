@@ -1,0 +1,79 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} - UniPlug 工具站</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- SEO Meta Tags -->
+    <meta property="og:title" content={`${title} - UniPlug 工具站`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} - UniPlug 工具站`} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  
+  <body class="bg-gray-50 min-h-screen">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm border-b">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <a href="/" class="flex items-center space-x-2">
+              <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <span class="text-white font-bold text-sm">UP</span>
+              </div>
+              <span class="text-xl font-bold text-gray-900">UniPlug</span>
+            </a>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <a href="/" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              首页
+            </a>
+            <a href="/tools" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              所有工具
+            </a>
+            <a href="/about" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              关于
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="py-8">
+      <slot />
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t mt-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="text-center text-gray-600">
+          <p>&copy; 2024 UniPlug 工具站. 所有工具均在浏览器本地运行，保护您的隐私安全。</p>
+          <p class="mt-2 text-sm">
+            <a href="/privacy" class="hover:text-gray-900 transition-colors">隐私政策</a>
+            <span class="mx-2">|</span>
+            <a href="/terms" class="hover:text-gray-900 transition-colors">使用条款</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
