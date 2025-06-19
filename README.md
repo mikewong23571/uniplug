@@ -223,7 +223,7 @@ export default {
 };
 ```
 
-访问 `/load?src=/plugins/sample.js` 即可在浏览器中运行该插件。
+在浏览器中打开 [`/load?src=/plugins/sample.js`](./load?src=/plugins/sample.js) 即可运行该插件。
 
 ### 5. 支持的输入类型
 
