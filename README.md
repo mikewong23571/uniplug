@@ -224,6 +224,7 @@ export default {
 ```
 
 在浏览器中打开 [`/load?src=/plugins/sample.js`](./load?src=/plugins/sample.js) 即可运行该插件。
+如果未提供 src 参数，页面会提示 “缺少 src 参数”
 
 ### 5. 支持的输入类型
 
