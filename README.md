@@ -200,7 +200,33 @@ export const logicMap = {
 };
 ```
 
-### 3. 支持的输入类型
+### 4. JavaScript 插件
+
+除了在 `src/content/tools/` 中定义工具外，也可以通过加载外部 JS 插件的方式扩展功能。
+插件需导出一个对象，其中包含工具的元数据以及 `run` 函数：
+
+```javascript
+// public/plugins/sample.js
+export default {
+  id: 'sample',
+  title: '示例插件',
+  description: '通过 JS 文件加载的外部工具',
+  inputs: [
+    { id: 'text', type: 'text', label: '文本' }
+  ],
+  outputs: [
+    { id: 'result', type: 'text', label: '结果' }
+  ],
+  async run({ text }) {
+    return { result: text.toUpperCase() };
+  }
+};
+```
+
+在浏览器中打开 [`/load?src=/plugins/sample.js`](./load?src=/plugins/sample.js) 即可运行该插件。
+如果未提供 src 参数，页面会提示 “缺少 src 参数”
+
+### 5. 支持的输入类型
 
 | 类型 | 描述 | 支持属性 |
 |------|------|----------|
@@ -211,7 +237,7 @@ export const logicMap = {
 | `select` | 下拉选择 | `options`, `defaultValue` |
 | `checkbox` | 复选框 | `defaultValue` |
 
-### 4. 支持的输出类型
+### 6. 支持的输出类型
 
 | 类型 | 描述 | 渲染方式 |
 |------|------|----------|
