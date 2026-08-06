@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { logicMap } from "../lib/logicLoader";
+import { loadPlugin, PluginTool } from "../lib/pluginLoader";
 import ResultRenderer from './ResultRenderer';
 
 interface ToolInput {
@@ -35,27 +36,46 @@ interface Tool {
     description: string;
     inputs: ToolInput[];
     outputs: ToolOutput[];
-    logic: string;
+    logic?: string;
     reversible?: boolean;
     reverseMapping?: ReverseMapping[];
   };
+  run?: (inputs: any) => Promise<any>;
 }
 
 interface Props {
-  tool: Tool;
+  tool?: Tool;
+  pluginUrl?: string;
 }
 
-export default function ToolRunner({ tool }: Props) {
+export default function ToolRunner({ tool, pluginUrl }: Props) {
+  const [plugin, setPlugin] = useState<PluginTool | null>(null);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [inputValues, setInputValues] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    if (!tool && pluginUrl) {
+      loadPlugin(pluginUrl)
+        .then(setPlugin)
+        .catch((err) => {
+          console.error('Plugin load failed:', err);
+          setError(err instanceof Error ? err.message : String(err));
+        });
+    }
+  }, [tool, pluginUrl]);
+
+  const activeTool = (tool ?? plugin) as Tool | null;
+  if (!activeTool) {
+    return <div className="text-center p-6">正在加载插件...</div>;
+  }
   
   // 处理反转功能：将输出结果用作输入
   const handleUseAsInput = (outputId: string, value: any) => {
-    if (!tool.data.reversible || !tool.data.reverseMapping) return;
-    
-    const mapping = tool.data.reverseMapping.find(m => m.from === outputId);
+    if (!activeTool.data.reversible || !activeTool.data.reverseMapping) return;
+
+    const mapping = activeTool.data.reverseMapping.find(m => m.from === outputId);
     if (!mapping) return;
     
     // 根据输出类型处理值
@@ -114,15 +134,18 @@ export default function ToolRunner({ tool }: Props) {
         }
       });
 
-      console.log('DEBUG9 - toolLogic:', tool.data.logic);
+      console.log('DEBUG9 - toolLogic:', activeTool.data.logic);
       console.log('DEBUG9 - inputs:', inputs);
-
-      const logicModule = await logicMap[tool.data.logic]?.();
-      if (!logicModule) {
-        throw new Error(`Unknown logic module: ${tool.data.logic}`);
+      let output: any;
+      if (activeTool.run) {
+        output = await activeTool.run(inputs);
+      } else {
+        const logicModule = await logicMap[activeTool.data.logic as string]?.();
+        if (!logicModule) {
+          throw new Error(`Unknown logic module: ${activeTool.data.logic}`);
+        }
+        output = await logicModule.run(inputs);
       }
-
-      const output = await logicModule.run(inputs);
       console.log('DEBUG9 - output:', output);
       setResult(output);
     } catch (err) {
@@ -292,15 +315,15 @@ export default function ToolRunner({ tool }: Props) {
     <div className="tool-runner max-w-4xl mx-auto p-6">
       {/* 工具标题和描述 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{tool.data.title}</h1>
-        <p className="text-lg text-gray-600">{tool.data.description}</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{activeTool.data.title}</h1>
+        <p className="text-lg text-gray-600">{activeTool.data.description}</p>
       </div>
 
       {/* 输入表单 */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">输入参数</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {tool.data.inputs.map((input) => (
+          {activeTool.data.inputs.map((input) => (
             <div key={input.id} className="form-group">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {input.label}
@@ -346,8 +369,8 @@ export default function ToolRunner({ tool }: Props) {
       {result && (
         <ResultRenderer
           outputs={result}
-          schema={tool.data.outputs}
-          onUseAsInput={tool.data.reversible ? handleUseAsInput : undefined}
+          schema={activeTool.data.outputs}
+          onUseAsInput={activeTool.data.reversible ? handleUseAsInput : undefined}
         />
       )}
     </div>
